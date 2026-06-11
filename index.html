@@ -614,8 +614,41 @@ function buildContactForm(item={}){
   `;
 }
 
+function buildMissionForm(item={}){
+  return `
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+    <div>
+      <div style="font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;padding-bottom:4px;border-bottom:1px solid var(--border)">📋 Mission</div>
+      <div class="form-group"><label>Intitulé du poste</label><input id="f-title" type="text" value="${item.title||''}"></div>
+      <div class="form-group"><label>Client</label><input id="f-client" type="text" value="${item.client||''}"></div>
+      <div class="form-group"><label>TJM de la mission (€)</label><input id="f-tjm" type="number" value="${item.tjm||''}" placeholder="ex: 650"></div>
+      <div class="form-group"><label>Durée estimée</label><input id="f-duration" type="text" value="${item.duration||''}" placeholder="ex: 6 mois, CDI..."></div>
+      <div class="form-group"><label>Statut</label>
+        <select id="f-status">
+          ${['Sourcing','Short-list','Entretiens','Proposition','Clôturé'].map(o=>`<option ${item.status===o?'selected':''}>${o}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;padding-bottom:4px;border-bottom:1px solid var(--border)">👤 Contact opérationnel</div>
+      <div class="form-group"><label>Nom du contact</label><input id="f-op_name" type="text" value="${item.op_name||''}" placeholder="Prénom NOM"></div>
+      <div class="form-group"><label>Fonction</label><input id="f-op_role" type="text" value="${item.op_role||''}" placeholder="ex: DSI, DRH..."></div>
+      <div class="form-group"><label>Email</label><input id="f-op_email" type="email" value="${item.op_email||''}"></div>
+      <div class="form-group"><label>Téléphone</label><input id="f-op_phone" type="text" value="${item.op_phone||''}"></div>
+      <div class="form-group"><label>LinkedIn</label><input id="f-op_linkedin" type="text" value="${item.op_linkedin||''}"></div>
+    </div>
+  </div>
+  <div style="font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;padding-bottom:4px;border-bottom:1px solid var(--border)">📝 Descriptif du poste</div>
+  <div class="form-group"><label>Description complète</label><textarea id="f-description" rows="6" placeholder="Contexte, missions, compétences requises, environnement technique...">${item.description||''}</textarea></div>
+  <div style="font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;padding-bottom:4px;border-bottom:1px solid var(--border)">🎯 Profil recherché</div>
+  <div class="form-group"><label>Compétences clés</label><input id="f-skills" type="text" value="${item.skills||''}" placeholder="ex: Python, AWS, Agile..."></div>
+  <div class="form-group"><label>Expérience souhaitée</label><input id="f-exp_required" type="text" value="${item.exp_required||''}" placeholder="ex: 5-8 ans"></div>
+  `;
+}
+
 function buildForm(col,item={}){
   if(col==='contacts') return buildContactForm(item);
+  if(col==='missions' && cur==='co') return buildMissionForm(item);
   return formDefs[col].fields.map(f=>{
     var inp='';
     if(f.type==='interview_date'){
@@ -647,7 +680,7 @@ function editItem(col,id){
   document.getElementById('modal-title').textContent='Modifier';
   document.getElementById('modal-body').innerHTML=buildForm(col,item);
   var box=document.querySelector('.modal-box');
-  box.style.width=col==='contacts'?'700px':'480px';
+  box.style.width=(col==='contacts'||(col==='missions'&&cur==='co'))?'700px':'480px';
   document.getElementById('modal-overlay').style.display='flex';
 }
 
@@ -656,7 +689,7 @@ function handleAdd(){
   document.getElementById('modal-title').textContent='Nouveau';
   document.getElementById('modal-body').innerHTML=buildForm(editCol);
   var box=document.querySelector('.modal-box');
-  box.style.width=editCol==='contacts'?'700px':'480px';
+  box.style.width=(editCol==='contacts'||editCol==='missions'&&cur==='co')?'700px':'480px';
   document.getElementById('modal-overlay').style.display='flex';
 }
 
@@ -671,15 +704,21 @@ function saveModal(){
   const get=id=>{const el=document.getElementById('f-'+id);return el?el.value.trim():'';};
   const data={};
   if(editCol==='contacts'){
-    // Champs contacts enrichis
     var fn=get('firstname'); var ln=get('lastname');
     data.firstname=fn; data.lastname=ln;
     data.name=((fn+' '+ln).trim())||get('name')||'';
     ['company','role','phone','phone2','email','email2','address','postal','city','country','linkedin','notes'].forEach(k=>{data[k]=get(k);});
-    // Conserver comments et history existants
     if(editId){
       var existing=(sd().contacts||[]).find(x=>x.id===editId);
       if(existing){ data.comments=existing.comments||''; data.history=existing.history||[]; }
+    }
+  } else if(editCol==='missions' && cur==='co'){
+    ['title','client','status','tjm','duration','op_name','op_role','op_email','op_phone','op_linkedin','description','skills','exp_required'].forEach(k=>{data[k]=get(k);});
+    if(data.tjm) data.tjm=parseInt(data.tjm)||0;
+    // Conserver candidats, comments, history
+    if(editId){
+      var exM=(sd().missions||[]).find(x=>x.id===editId);
+      if(exM){ data.candidats=exM.candidats||0; data.comments=exM.comments||''; data.history=exM.history||[]; }
     }
   } else {
     formDefs[editCol].fields.forEach(f=>{
@@ -743,8 +782,13 @@ function openCandPanel(id){
   document.getElementById('cp-phone').textContent = c.phone||'\u2014';
   document.getElementById('cp-date').textContent = c.interview_date ? new Date(c.interview_date).toLocaleDateString('fr-FR') : '\u2014';
   var mb = document.getElementById('cp-mission-badge');
-  if(c.mission){ mb.textContent = c.mission; mb.style.display='inline-block'; mb.onclick=function(){ showMissionFromCand(c.mission); closeCandPanel(); }; }
-  else { mb.style.display='none'; }
+  if(c.mission){
+    var missionObj=(sd().missions||[]).find(m=>m.title===c.mission);
+    var clientName=missionObj?missionObj.client:'';
+    mb.innerHTML=c.mission+(clientName?' &nbsp;|&nbsp; <span style="opacity:.75">'+clientName+'</span>':'');
+    mb.style.display='inline-block';
+    mb.onclick=function(){ showMissionFromCand(c.mission); closeCandPanel(); };
+  } else { mb.style.display='none'; }
   document.getElementById('cp-comments').value = c.comments||'';
   var cvLoaded = document.getElementById('cp-cv-loaded');
   var cvEmpty = document.getElementById('cp-cv-empty');
@@ -778,6 +822,7 @@ function saveComments(){
   var idx=arr.findIndex(function(x){ return x.id===currentCandId; });
   if(idx<0) return;
   var noteText=document.getElementById('cp-comments').value;
+  document.getElementById('cp-comments').value='';
   arr[idx].comments=noteText;
   var date=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
   if(!arr[idx].history) arr[idx].history=[];
@@ -881,6 +926,7 @@ function saveContactComments(){
   var idx=arr.findIndex(function(x){ return x.id===currentContactId; });
   if(idx<0) return;
   var noteTextCt=document.getElementById('ct-comments').value;
+  document.getElementById('ct-comments').value='';
   arr[idx].comments=noteTextCt;
   var date=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
   if(!arr[idx].history) arr[idx].history=[];
@@ -1109,6 +1155,7 @@ function saveProspectComments(){
   if(!currentProspectId)return;
   var arr=sd().prospects; var idx=arr.findIndex(x=>x.id===currentProspectId); if(idx<0)return;
   var noteTextPp=document.getElementById('pp-comments').value;
+  document.getElementById('pp-comments').value='';
   arr[idx].comments=noteTextPp;
   var date=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
   if(!arr[idx].history)arr[idx].history=[];
@@ -1145,6 +1192,7 @@ function saveClientComments(){
   if(!currentClientId)return;
   var arr=sd().clients; var idx=arr.findIndex(x=>x.id===currentClientId); if(idx<0)return;
   var noteTextCl=document.getElementById('cl-comments').value;
+  document.getElementById('cl-comments').value='';
   arr[idx].comments=noteTextCl;
   var date=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
   if(!arr[idx].history)arr[idx].history=[];
@@ -1165,8 +1213,23 @@ function openMissionPanel(id){
   document.getElementById('mp-title').textContent=m.title||'';
   document.getElementById('mp-client').textContent=m.client||'';
   document.getElementById('mp-status').innerHTML=sb(m.status||'');
-  document.getElementById('mp-rab').textContent=m.rab?Number(m.rab).toLocaleString()+' €':'—';
+  document.getElementById('mp-rab').textContent=m.rab?Number(m.rab).toLocaleString()+' €':(m.tjm?Number(m.tjm).toLocaleString()+' €/j':'—');
+  document.getElementById('mp-rab-label').textContent=cur==='co'?'TJM':'RAB estimée';
   document.getElementById('mp-candidats').textContent=m.candidats||0;
+  // Bloc consulting
+  var coBlock=document.getElementById('mp-co-block');
+  if(cur==='co' && coBlock){
+    coBlock.style.display='block';
+    document.getElementById('mp-duration').textContent=m.duration||'—';
+    document.getElementById('mp-description').textContent=m.description||'—';
+    document.getElementById('mp-skills').textContent=m.skills||'—';
+    document.getElementById('mp-exp-required').textContent=m.exp_required||'—';
+    document.getElementById('mp-op-name').textContent=m.op_name||'—';
+    document.getElementById('mp-op-role').textContent=m.op_role||'';
+    document.getElementById('mp-op-email').innerHTML=m.op_email?'<a href="mailto:'+m.op_email+'" style="color:#9B2335;text-decoration:none">'+m.op_email+'</a>':'—';
+    document.getElementById('mp-op-phone').textContent=m.op_phone||'—';
+    document.getElementById('mp-op-linkedin').innerHTML=m.op_linkedin?'<a href="'+(m.op_linkedin.startsWith('http')?m.op_linkedin:'https://'+m.op_linkedin)+'" target="_blank" style="color:#9B2335;text-decoration:none">'+m.op_linkedin+'</a>':'—';
+  } else if(coBlock){ coBlock.style.display='none'; }
   document.getElementById('mp-comments').value=m.comments||'';
   var hist=m.history||[];
   document.getElementById('mp-history').innerHTML=hist.length?hist.map(h=>'<div style="padding:6px 0;border-bottom:0.5px solid var(--border)">'+h+'</div>').join(''):'<div style="color:var(--text-secondary)">Aucun historique</div>';
@@ -1179,6 +1242,7 @@ function saveMissionComments(){
   if(!currentMissionId)return;
   var arr=sd().missions; var idx=arr.findIndex(x=>x.id===currentMissionId); if(idx<0)return;
   var noteTextMp=document.getElementById('mp-comments').value;
+  document.getElementById('mp-comments').value='';
   arr[idx].comments=noteTextMp;
   var date=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
   if(!arr[idx].history)arr[idx].history=[];
@@ -1292,12 +1356,55 @@ try { render('dashboard'); } catch(e) { console.error('render error:', e); }
     <div style="font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;padding-bottom:4px;border-bottom:0.5px solid var(--border)">📊 Informations</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px">
       <div style="background:var(--bg-secondary);border-radius:8px;padding:11px">
-        <div style="font-size:10px;color:var(--text-secondary);margin-bottom:3px;text-transform:uppercase">RAB estimée</div>
+        <div id="mp-rab-label" style="font-size:10px;color:var(--text-secondary);margin-bottom:3px;text-transform:uppercase">RAB estimée</div>
         <div id="mp-rab" style="font-size:22px;font-weight:700;color:#B8963E"></div>
       </div>
       <div style="background:var(--bg-secondary);border-radius:8px;padding:11px">
         <div style="font-size:10px;color:var(--text-secondary);margin-bottom:3px;text-transform:uppercase">Candidats</div>
         <div id="mp-candidats" style="font-size:22px;font-weight:700"></div>
+      </div>
+    </div>
+
+    <!-- Bloc spécifique TL Consulting -->
+    <div id="mp-co-block" style="display:none">
+      <div style="font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;padding-bottom:4px;border-bottom:0.5px solid var(--border)">👤 Contact opérationnel</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px">
+        <div style="background:var(--bg-secondary);border-radius:8px;padding:11px;grid-column:1/-1">
+          <div style="font-size:10px;color:var(--text-secondary);margin-bottom:3px;text-transform:uppercase">Nom & Fonction</div>
+          <div id="mp-op-name" style="font-size:14px;font-weight:600"></div>
+          <div id="mp-op-role" style="font-size:12px;color:var(--text-secondary);margin-top:2px"></div>
+        </div>
+        <div style="background:var(--bg-secondary);border-radius:8px;padding:11px">
+          <div style="font-size:10px;color:var(--text-secondary);margin-bottom:3px;text-transform:uppercase">📞 Téléphone</div>
+          <div id="mp-op-phone" style="font-size:13px"></div>
+        </div>
+        <div style="background:var(--bg-secondary);border-radius:8px;padding:11px">
+          <div style="font-size:10px;color:var(--text-secondary);margin-bottom:3px;text-transform:uppercase">✉️ Email</div>
+          <div id="mp-op-email" style="font-size:12px;word-break:break-all"></div>
+        </div>
+        <div style="background:var(--bg-secondary);border-radius:8px;padding:11px;grid-column:1/-1">
+          <div style="font-size:10px;color:var(--text-secondary);margin-bottom:3px;text-transform:uppercase">🔗 LinkedIn</div>
+          <div id="mp-op-linkedin" style="font-size:12px"></div>
+        </div>
+      </div>
+      <div style="font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;padding-bottom:4px;border-bottom:0.5px solid var(--border)">📝 Descriptif du poste</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px">
+        <div style="background:var(--bg-secondary);border-radius:8px;padding:11px">
+          <div style="font-size:10px;color:var(--text-secondary);margin-bottom:3px;text-transform:uppercase">Durée</div>
+          <div id="mp-duration" style="font-size:13px;font-weight:500"></div>
+        </div>
+        <div style="background:var(--bg-secondary);border-radius:8px;padding:11px">
+          <div style="font-size:10px;color:var(--text-secondary);margin-bottom:3px;text-transform:uppercase">Expérience requise</div>
+          <div id="mp-exp-required" style="font-size:13px;font-weight:500"></div>
+        </div>
+        <div style="background:var(--bg-secondary);border-radius:8px;padding:11px;grid-column:1/-1">
+          <div style="font-size:10px;color:var(--text-secondary);margin-bottom:3px;text-transform:uppercase">Compétences clés</div>
+          <div id="mp-skills" style="font-size:13px"></div>
+        </div>
+        <div style="background:var(--bg-secondary);border-radius:8px;padding:11px;grid-column:1/-1">
+          <div style="font-size:10px;color:var(--text-secondary);margin-bottom:3px;text-transform:uppercase">Description</div>
+          <div id="mp-description" style="font-size:13px;white-space:pre-wrap;line-height:1.5"></div>
+        </div>
       </div>
     </div>
     <div style="font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;padding-bottom:4px;border-bottom:0.5px solid var(--border)">💬 Notes</div>
