@@ -1154,23 +1154,39 @@ function doSearch(q){
 
 // ===== TOOLTIP HISTORIQUE =====
 function histLine(h){
-  var escaped=h.replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-  return'<div class="hist-item" onmouseenter="showHistTooltip(event,\''+escaped+'\')" onmouseleave="hideHistTooltip()">'+h+'</div>';
+  var escaped=h.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+  return'<div class="hist-item" data-hist="'+escaped+'">'+h+'</div>';
 }
 function showHistTooltip(e,text){
   var t=document.getElementById('hist-tooltip');
-  t.textContent=text.replace(/&quot;/g,'"').replace(/&#39;/g,"'");
+  t.textContent=text;
   t.style.display='block';
-  var x=e.clientX+12; var y=e.clientY-10;
-  // Éviter de sortir à droite
+  var x=e.clientX+14; var y=e.clientY-10;
   if(x+340>window.innerWidth) x=e.clientX-340;
-  // Éviter de sortir en haut
   if(y<8) y=8;
   t.style.left=x+'px'; t.style.top=y+'px';
 }
 function hideHistTooltip(){
   document.getElementById('hist-tooltip').style.display='none';
 }
+// Délégation globale sur tout le document
+document.addEventListener('mouseover',function(e){
+  var el=e.target.closest('.hist-item');
+  if(el && el.dataset.hist) showHistTooltip(e, el.dataset.hist.replace(/&amp;/g,'&').replace(/&quot;/g,'"'));
+});
+document.addEventListener('mousemove',function(e){
+  var t=document.getElementById('hist-tooltip');
+  if(t&&t.style.display==='block'){
+    var x=e.clientX+14; var y=e.clientY-10;
+    if(x+340>window.innerWidth) x=e.clientX-340;
+    if(y<8) y=8;
+    t.style.left=x+'px'; t.style.top=y+'px';
+  }
+});
+document.addEventListener('mouseout',function(e){
+  var el=e.target.closest('.hist-item');
+  if(el) hideHistTooltip();
+});
 
 // ===== RECHERCHE CONTACT OPÉRATIONNEL (formulaire mission Consulting) =====
 function searchOpContact(q){
