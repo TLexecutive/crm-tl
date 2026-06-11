@@ -84,7 +84,7 @@ label{font-size:12px;color:var(--text-secondary);display:block;margin-bottom:4px
 .hist-item{position:relative;padding:7px 0;border-bottom:0.5px solid var(--border);cursor:pointer;font-size:12px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:20px}
 .hist-item:hover{color:var(--text-primary)}
 .hist-item::after{content:'↗';position:absolute;right:4px;top:50%;transform:translateY(-50%);font-size:10px;opacity:.4}
-.hist-tooltip{display:none;position:fixed;background:var(--bg-primary);border:0.5px solid var(--border-hover);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:var(--text-primary);max-width:320px;box-shadow:0 4px 16px rgba(0,0,0,.25);z-index:99999;line-height:1.5;pointer-events:none;word-break:break-word;white-space:normal}
+.hist-tooltip{display:none;position:fixed;background:var(--bg-primary);border:0.5px solid var(--border-hover);border-radius:var(--radius);padding:12px 16px;font-size:13px;color:var(--text-primary);max-width:460px;min-width:220px;box-shadow:0 6px 24px rgba(0,0,0,.35);z-index:99999;line-height:1.6;pointer-events:none;word-break:break-word;white-space:pre-wrap}
 </style>
 </head>
 <body>
@@ -1172,7 +1172,18 @@ function hideHistTooltip(){
 // Délégation globale sur tout le document
 document.addEventListener('mouseover',function(e){
   var el=e.target.closest('.hist-item');
-  if(el && el.dataset.hist) showHistTooltip(e, el.dataset.hist.replace(/&amp;/g,'&').replace(/&quot;/g,'"'));
+  if(el && el.dataset.hist){
+    var t=document.getElementById('hist-tooltip');
+    t.textContent=el.dataset.hist.replace(/&amp;/g,'&').replace(/&quot;/g,'"');
+    t.style.display='block';
+    var x=e.clientX+16; var y=e.clientY-10;
+    // Recalculer après affichage pour connaître la vraie taille
+    var tw=t.offsetWidth; var th=t.offsetHeight;
+    if(x+tw+10>window.innerWidth) x=e.clientX-tw-10;
+    if(y+th+10>window.innerHeight) y=e.clientY-th-10;
+    if(y<8) y=8; if(x<8) x=8;
+    t.style.left=x+'px'; t.style.top=y+'px';
+  }
 });
 document.addEventListener('mousemove',function(e){
   var t=document.getElementById('hist-tooltip');
@@ -1530,12 +1541,4 @@ try { render('dashboard'); } catch(e) { console.error('render error:', e); }
     <div id="mp-history" style="font-size:12px;color:var(--text-secondary);margin-bottom:20px"></div>
     <div style="display:flex;gap:8px;padding-top:16px;border-top:0.5px solid var(--border)">
       <button onclick="editMissionFromPanel()" style="flex:1;background:#1A1A2E;color:#B8963E;border:1px solid #B8963E;padding:8px;border-radius:6px;cursor:pointer;font-weight:600;font-size:13px">✏️ Modifier</button>
-      <button onclick="closeMissionPanel()" style="flex:1;background:transparent;color:var(--text-secondary);border:0.5px solid var(--border);padding:8px;border-radius:6px;cursor:pointer;font-size:13px">Fermer</button>
-    </div>
-  </div>
-</div>
-<div id="mission-panel-overlay" onclick="closeMissionPanel()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:499"></div>
-<div id="hist-tooltip" class="hist-tooltip"></div>
-
-</body>
-</html>
+      <button onclick="c
