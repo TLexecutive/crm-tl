@@ -84,12 +84,11 @@ label{font-size:12px;color:var(--text-secondary);display:block;margin-bottom:4px
 .hist-item{position:relative;padding:7px 0;border-bottom:0.5px solid var(--border);cursor:pointer;font-size:12px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:20px}
 .hist-item:hover{color:var(--text-primary)}
 .hist-item::after{content:'↗';position:absolute;right:4px;top:50%;transform:translateY(-50%);font-size:10px;opacity:.4}
-.hist-tooltip{display:none;position:fixed;background:var(--bg-primary);border:0.5px solid var(--border-hover);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:var(--text-primary);max-width:320px;box-shadow:0 4px 16px rgba(0,0,0,.25);z-index:9999;line-height:1.5;pointer-events:none;word-break:break-word;white-space:normal}
+.hist-tooltip{display:none;position:fixed;background:var(--bg-primary);border:0.5px solid var(--border-hover);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:var(--text-primary);max-width:320px;box-shadow:0 4px 16px rgba(0,0,0,.25);z-index:99999;line-height:1.5;pointer-events:none;word-break:break-word;white-space:normal}
 </style>
 </head>
 <body>
 <div class="crm-wrap">
-<div id="hist-tooltip" class="hist-tooltip"></div>
   <div class="sidebar">
     <div class="logo-area">
       <div class="struct-toggle">
@@ -810,7 +809,7 @@ function openCandPanel(id){
     mb.style.display='inline-block';
     mb.onclick=function(){ showMissionFromCand(c.mission); closeCandPanel(); };
   } else { mb.style.display='none'; }
-  document.getElementById('cp-comments').value = c.comments||'';
+  document.getElementById('cp-comments').value = '';
   var cvLoaded = document.getElementById('cp-cv-loaded');
   var cvEmpty = document.getElementById('cp-cv-empty');
   var cvName = document.getElementById('cp-cv-name');
@@ -925,7 +924,7 @@ function openContactPanel(id){
   if(li){ document.getElementById('ct-linkedin').innerHTML='<a href="'+(li.startsWith('http')?li:'https://'+li)+'" target="_blank" style="color:#B8963E;text-decoration:none">'+li+'</a>'; liblock.style.display='block'; }
   else { liblock.style.display='none'; }
   // Commentaires (notes du champ notes OU comments)
-  document.getElementById('ct-comments').value = c.comments||c.notes||'';
+  document.getElementById('ct-comments').value = '';
   var hist = c.history||[];
   document.getElementById('ct-history').innerHTML = hist.length ?
     hist.map(function(h){ return histLine(h); }).join('') :
@@ -1239,7 +1238,7 @@ function openProspectPanel(id){
   document.getElementById('pp-temp').innerHTML=sb(p.temp||'');
   document.getElementById('pp-need').textContent=p.need||'—';
   document.getElementById('pp-next').textContent=p.next||'—';
-  document.getElementById('pp-comments').value=p.comments||'';
+  document.getElementById('pp-comments').value='';
   var hist=p.history||[];
   document.getElementById('pp-history').innerHTML=hist.length?hist.map(h=>histLine(h)).join(''):'<div style="color:var(--text-secondary)">Aucun historique</div>';
   document.getElementById('pp-save-msg').style.display='none';
@@ -1276,7 +1275,7 @@ function openClientPanel(id){
   document.getElementById('cl-contact').textContent=c.contact||'—';
   document.getElementById('cl-missions').textContent=c.missions||0;
   document.getElementById('cl-sector-val').textContent=c.sector||'—';
-  document.getElementById('cl-comments').value=c.comments||'';
+  document.getElementById('cl-comments').value='';
   var hist=c.history||[];
   document.getElementById('cl-history').innerHTML=hist.length?hist.map(h=>histLine(h)).join(''):'<div style="color:var(--text-secondary)">Aucun historique</div>';
   document.getElementById('cl-save-msg').style.display='none';
@@ -1326,7 +1325,7 @@ function openMissionPanel(id){
     document.getElementById('mp-op-phone').textContent=m.op_phone||'—';
     document.getElementById('mp-op-linkedin').innerHTML=m.op_linkedin?'<a href="'+(m.op_linkedin.startsWith('http')?m.op_linkedin:'https://'+m.op_linkedin)+'" target="_blank" style="color:#9B2335;text-decoration:none">'+m.op_linkedin+'</a>':'—';
   } else if(coBlock){ coBlock.style.display='none'; }
-  document.getElementById('mp-comments').value=m.comments||'';
+  document.getElementById('mp-comments').value='';
   var hist=m.history||[];
   document.getElementById('mp-history').innerHTML=hist.length?hist.map(h=>histLine(h)).join(''):'<div style="color:var(--text-secondary)">Aucun historique</div>';
   document.getElementById('mp-save-msg').style.display='none';
@@ -1520,6 +1519,7 @@ try { render('dashboard'); } catch(e) { console.error('render error:', e); }
   </div>
 </div>
 <div id="mission-panel-overlay" onclick="closeMissionPanel()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:499"></div>
+<div id="hist-tooltip" class="hist-tooltip"></div>
 
 </body>
 </html>
