@@ -1177,21 +1177,15 @@ document.addEventListener('mouseover',function(e){
     var t=document.getElementById('hist-tooltip');
     t.textContent=el.dataset.hist.replace(/&amp;/g,'&').replace(/&quot;/g,'"');
     t.style.display='block';
-    var x=e.clientX+16; var y=e.clientY-10;
-    // Recalculer après affichage pour connaître la vraie taille
+    // Positionner au-dessus de l'élément survolé
+    var rect=el.getBoundingClientRect();
     var tw=t.offsetWidth; var th=t.offsetHeight;
-    if(x+tw+10>window.innerWidth) x=e.clientX-tw-10;
-    if(y+th+10>window.innerHeight) y=e.clientY-th-10;
-    if(y<8) y=8; if(x<8) x=8;
-    t.style.left=x+'px'; t.style.top=y+'px';
-  }
-});
-document.addEventListener('mousemove',function(e){
-  var t=document.getElementById('hist-tooltip');
-  if(t&&t.style.display==='block'){
-    var x=e.clientX+14; var y=e.clientY-10;
-    if(x+340>window.innerWidth) x=e.clientX-340;
-    if(y<8) y=8;
+    var x=rect.left; var y=rect.top-th-8;
+    // Si ça sort en haut, afficher en dessous
+    if(y<8) y=rect.bottom+8;
+    // Si ça sort à droite
+    if(x+tw+10>window.innerWidth) x=window.innerWidth-tw-10;
+    if(x<8) x=8;
     t.style.left=x+'px'; t.style.top=y+'px';
   }
 });
