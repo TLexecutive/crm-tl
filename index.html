@@ -866,4 +866,225 @@ function openContactPanel(id){
 }
 
 function closeContactPanel(){
-  document.get
+  document.getElementById('contact-panel').style.display='none';
+  document.getElementById('contact-panel-overlay').style.display='none';
+  currentContactId=null;
+}
+
+function saveContactComments(){
+  if(!currentContactId) return;
+  var arr=sd().contacts||[];
+  var idx=arr.findIndex(function(x){ return x.id===currentContactId; });
+  if(idx<0) return;
+  arr[idx].comments=document.getElementById('ct-comments').value;
+  var date=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
+  if(!arr[idx].history) arr[idx].history=[];
+  arr[idx].history.unshift(date+' — Note enregistrée');
+  arr[idx].history=arr[idx].history.slice(0,10);
+  save();
+  document.getElementById('ct-history').innerHTML=arr[idx].history.map(function(h){
+    return '<div style="padding:6px 0;border-bottom:0.5px solid var(--border)">'+h+'</div>';
+  }).join('');
+  var msg=document.getElementById('ct-save-msg');
+  msg.style.display='inline'; setTimeout(function(){ msg.style.display='none'; },2000);
+}
+
+function editContactFromPanel(){
+  var id=currentContactId;
+  closeContactPanel();
+  if(id) setTimeout(function(){ editItem('contacts',id); },150);
+}
+
+function showMissionFromCand(missionTitle){
+  var mission=(sd().missions||[]).find(m=>m.title===missionTitle);
+  if(mission){
+    show('missions',document.querySelector('.nav-item[onclick*="missions"]'));
+    setTimeout(function(){ editItem('missions',mission.id); },200);
+  }
+}
+
+function backupJSON(){
+  var date=new Date().toISOString().slice(0,10);
+  var struct=cur==='es'?'TL_Executive_Search':'TL_Consulting';
+  var data=JSON.stringify(state,null,2);
+  var a=document.createElement('a');
+  a.href='data:application/json;charset=utf-8,'+encodeURIComponent(data);
+  a.download='Sauvegarde_CRM_'+date+'.json';
+  a.click();
+  hideBackupReminder();
+}
+function backupAllCSV(){
+  var date=new Date().toISOString().slice(0,10);
+  var collections={
+    contacts:['name','company','role','email','phone'],
+    candidats:['name','role','exp','status','interview_date','mission','email','phone'],
+    missions:['title','client','rab','status','candidats','interview_date'],
+    prospects:['name','contact','need','temp','next'],
+    clients:['name','contact','sector','status','missions']
+  };
+  ['es','co'].forEach(function(struct){
+    var label=struct==='es'?'TL_Executive_Search':'TL_Consulting';
+    Object.keys(collections).forEach(function(col){
+      var rows=state[struct][col]||[];
+      if(!rows.length) return;
+      var fields=collections[col];
+      var csv=fields.join(',')+'\n';
+      rows.forEach(function(r){
+        csv+=fields.map(function(f){
+          var v=r[f]||'';
+          return '"'+String(v).replace(/"/g,'""')+'"';
+        }).join(',')+'\n';
+      });
+      var a=document.createElement('a');
+      a.href='data:text/csv;charset=utf-8,﻿'+encodeURIComponent(csv);
+      a.download='Backup_'+label+'_'+col+'_'+date+'.csv';
+      setTimeout(function(){ a.click(); },200*Object.keys(collections).indexOf(col));
+    });
+  });
+  hideBackupReminder();
+}
+function backupAll(){
+  backupJSON();
+  setTimeout(function(){ backupAllCSV(); },500);
+}
+function restoreJSON(event){
+  var file=event.target.files[0];
+  if(!file) return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      var data=JSON.parse(e.target.result);
+      if(data.es&&data.co){
+        state=data;
+        save();
+        render(curSec);
+        document.getElementById('restore-result').innerHTML='<span style="color:#2d6a10;font-weight:600">Restauration r\u00e9ussie !</span>';
+      } else {
+        document.getElementById('restore-result').innerHTML='<span style="color:#e44">Fichier invalide.</span>';
+      }
+    }catch(ex){
+      document.getElementById('restore-result').innerHTML='<span style="color:#e44">Erreur : '+ex.message+'</span>';
+    }
+  };
+  reader.readAsText(file);
+}
+function closeModal(){document.getElementById('modal-overlay').style.display='none';editId=null;editCol=null;}
+
+const csvHeaders={
+  prospects:'name;contact;need;temp;next',
+  missions:'title;client;rab;status;candidats',
+  candidats:'name;role;exp;status;mission;email;phone',
+  clients:'name;contact;sector;status;missions',
+  contacts:'name;company;role;email;phone'
+};
+
+function updateImportHelp(){
+  const t=document.getElementById('import-type').value;
+  document.getElementById('import-help').textContent='Colonnes attendues : '+csvHeaders[t];
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  const sel=document.getElementById('import-type');
+  if(sel)sel.addEventListener('change',updateImportHelp);
+});
+
+function doImport(){
+  var t = document.getElementById('import-type').value;
+  var csv = document.getElementById('import-csv').value.trim();
+  if(!csv){ document.getElementById('import-result').textContent='Aucun contenu a importer.'; return; }
+  csv = csv.replace(/^[\uFEFF\uFFFE]/, '');
+  var firstLine = csv.indexOf('\n') > -1 ? csv.substring(0, csv.indexOf('\n')) : csv;
+
+  var sep = firstLine.indexOf(';') > -1 ? ';' : ',';
+  var allLines = csv.split('\n');
+  var lines = [];
+  for(var x=0; x<allLines.length; x++){ var l=allLines[x].replace(/\r/g,'').trim(); if(l) lines.push(l); }
+  // Parser CSV avec guillemets
+  function parseCSVLine(line, sep) {
+    var result = []; var cur = ''; var inQ = false;
+    for(var i=0; i<line.length; i++) {
+      var c = line[i];
+      if(c === '"') { inQ = !inQ; }
+      else if(c === sep && !inQ) { result.push(cur.trim()); cur = ''; }
+      else { cur += c; }
+    }
+    result.push(cur.trim());
+    return result;
+  }
+  if(lines.length < 2){ document.getElementById('import-result').textContent='Fichier vide.'; return; }
+  var fieldOrder = {
+    prospects: ['name','contact','need','temp','next'],
+    missions:  ['title','client','rab','status','candidats'],
+    candidats: ['name','role','exp','status','mission','email','phone'],
+    clients:   ['name','contact','sector','status','missions'],
+    contacts:  ['name','company','role','email','phone']
+  };
+  var fields = fieldOrder[t] || [];
+  var count = 0;
+  for(var i=1; i<lines.length; i++){
+    var vals = parseCSVLine(lines[i], sep);
+    var obj = { id: Date.now() + i };
+    for(var j=0; j<fields.length; j++){ obj[fields[j]] = vals[j] || ''; }
+    if(t==='missions'){ obj.rab=parseInt(obj.rab)||0; obj.candidats=parseInt(obj.candidats)||0; if(!obj.status) obj.status='Sourcing'; }
+    if(t==='clients'){ obj.missions=parseInt(obj.missions)||0; if(!obj.status) obj.status='Actif'; }
+    if(t==='candidats' && !obj.status) obj.status = '\u00c0 contacter';
+    if(t==='prospects' && !obj.temp) obj.temp = 'Ti\u00e8de';
+    var hasData = false;
+    for(var f=0; f<fields.length; f++){ if(obj[fields[f]] && obj[fields[f]] !== 'undefined' && obj[fields[f]].trim() !== ''){ hasData=true; break; } }
+    if(!hasData) continue;
+    sd()[t].push(obj);
+    count++;
+  }
+  save();
+  document.getElementById('import-result').innerHTML = '<span style="color:#2d6a10;font-weight:600">' + count + ' enregistrement(s) import\u00e9(s).</span>';
+  console.log('Import', t, ':', count, 'items. Current state:', JSON.stringify(sd()[t].slice(0,2)));
+  document.getElementById('import-csv').value = '';
+}
+
+function exportCSV(col){
+  const data=sd()[col];
+  if(!data.length){alert('Aucune donn\u00e9e \u00e0 exporter.');return;}
+  const headers=Object.keys(data[0]).filter(k=>k!=='id');
+  const csv=[headers.join(';'),...data.map(r=>headers.map(h=>r[h]||'').join(';'))].join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+  a.download='TL_'+cur.toUpperCase()+'_'+col+'_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+}
+
+function doSearch(q){
+  if(!q) return render(curSec);
+  const d=sd(); const lq=q.toLowerCase();
+
+  if(curSec==='contacts'){
+    document.getElementById('contacts-tbody').innerHTML=d.contacts.filter(c=>JSON.stringify(c).toLowerCase().includes(lq)).map(c=>{
+      const name=c.name||c.nom||'';const company=c.company||c.entreprise||c.societe||'';const role=c.role||c.fonction||c.titre||'';const email=c.email||c.mail||'';const phone=c.phone||c.telephone||c.tel||'';
+      return'<tr><td><div style="display:flex;align-items:center;gap:8px"><div class="avatar av-'+cur+'">'+initials(name)+'</div>'+name+'</div></td><td>'+company+'</td><td><span class="badge badge-gray">'+role+'</span></td><td style="color:var(--text-secondary);font-size:12px">'+email+'</td><td style="font-size:12px">'+(phone||'\u2014')+'</td><td><button class="btn btn-sm" onclick="editItem(\'contacts\','+c.id+')"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span></button> <button class="btn btn-sm" onclick="deleteItem(\'contacts\','+c.id+')"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></span></button></td></tr>';
+    }).join('');
+  }
+  if(curSec==='candidats'){
+    const list=candFilter?d.candidats.filter(c=>c.status===candFilter):d.candidats;
+    document.getElementById('candidats-tbody').innerHTML=list.filter(c=>JSON.stringify(c).toLowerCase().includes(lq)).map(c=>'<tr ondblclick="openCandPanel('+c.id+')" style="cursor:pointer"><td><div style="display:flex;align-items:center;gap:8px"><div class="avatar av-'+cur+'">'+initials(c.name)+'</div>'+c.name+'</div></td><td>'+(c.role||'')+'</td><td>'+(c.exp||'')+'</td><td>'+sb(c.status)+'</td><td style="color:var(--text-secondary);font-size:12px">'+(c.mission||'\u2014')+'</td><td><button class="btn btn-sm" onclick="editItem(\'candidats\','+c.id+')"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span></button> <button class="btn btn-sm" onclick="deleteItem(\'candidats\','+c.id+')"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></span></button></td></tr>').join('');
+  }
+  if(curSec==='clients'){
+    document.getElementById('clients-tbody').innerHTML=d.clients.filter(c=>JSON.stringify(c).toLowerCase().includes(lq)).map(c=>'<tr><td><div style="display:flex;align-items:center;gap:8px"><div class="avatar av-'+cur+'">'+c.name.slice(0,2).toUpperCase()+'</div>'+c.name+'</div></td><td>'+(c.contact||'')+'</td><td><span class="badge badge-gray">'+(c.sector||'')+'</span></td><td>'+(c.missions||0)+'</td><td>'+sb(c.status)+'</td><td><button class="btn btn-sm" onclick="editItem(\'clients\','+c.id+')"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span></button> <button class="btn btn-sm" onclick="deleteItem(\'clients\','+c.id+')"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></span></button></td></tr>').join('');
+  }
+  if(curSec==='prospects'){
+    document.getElementById('prospects-tbody').innerHTML=d.prospects.filter(p=>JSON.stringify(p).toLowerCase().includes(lq)).map(p=>'<tr><td><strong>'+p.name+'</strong></td><td>'+(p.contact||'')+'</td><td>'+(p.need||'')+'</td><td>'+sb(p.temp)+'</td><td style="font-size:12px;color:var(--text-secondary)">'+(p.next||'')+'</td><td><button class="btn btn-sm" onclick="editItem(\'prospects\','+p.id+')"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span></button> <button class="btn btn-sm" onclick="deleteItem(\'prospects\','+p.id+')"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></span></button></td></tr>').join('');
+  }
+  if(curSec==='missions'){
+    const stages=['Sourcing','Short-list','Entretiens','Proposition','Cl\u00f4tur\u00e9'];
+    const pc={'Sourcing':'#E6F1FB','Short-list':'#EEEDFE','Entretiens':'#FAEEDA','Proposition':'#EAF3DE','Cl\u00f4tur\u00e9':'#F1EFE8'};
+    const ptc={'Sourcing':'#144f8f','Short-list':'#3C3489','Entretiens':'#7a4a08','Proposition':'#2d6a10','Cl\u00f4tur\u00e9':'#555'};
+    const filtered=d.missions.filter(m=>JSON.stringify(m).toLowerCase().includes(lq));
+    document.getElementById('pipeline-board').innerHTML=stages.map(st=>{
+      const cards=filtered.filter(m=>m.status===st);
+      return'<div class="pipe-col"><div class="pipe-header" style="background:'+pc[st]+';color:'+ptc[st]+'">'+st+'<span style="background:rgba(0,0,0,.1);border-radius:20px;padding:1px 8px;font-size:11px">'+cards.length+'</span></div>'+cards.map(m=>'<div class="pipe-card" onclick="editItem(\'missions\','+m.id+')"><div class="pipe-card-title">'+m.title+'</div><div class="pipe-card-sub">'+m.client+'</div><div class="pipe-card-footer"><span style="font-size:11px;color:var(--text-secondary)">'+(m.rab?Number(m.rab).toLocaleString()+'\u20ac':'')+'</span><span style="font-size:11px;color:var(--text-secondary)"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> '+(m.candidats||0)+'</span></div></div>').join('')+'</div>';
+    }).join('');
+  }
+}
+
+try { render('dashboard'); } catch(e) { console.error('render error:', e); }
+
+</script>
+</body>
+</html>
