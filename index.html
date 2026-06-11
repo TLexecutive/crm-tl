@@ -289,6 +289,82 @@ label{font-size:12px;color:var(--text-secondary);display:block;margin-bottom:4px
 </div>
 <div id="cand-panel-overlay" onclick="closeCandPanel()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:499"></div>
 
+<!-- PANNEAU CONTACT -->
+<div id="contact-panel" style="display:none;position:fixed;top:0;right:0;width:520px;height:100vh;background:var(--bg-primary);border-left:0.5px solid var(--border);z-index:500;overflow-y:auto;box-shadow:-4px 0 20px rgba(0,0,0,0.3)">
+  <div style="padding:20px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg-primary);z-index:1">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div id="ct-avatar" style="width:48px;height:48px;border-radius:50%;background:#FFF8EC;color:#B8963E;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0"></div>
+      <div><div id="ct-name" style="font-size:17px;font-weight:700"></div><div id="ct-role" style="font-size:12px;color:var(--text-secondary)"></div><div id="ct-company-top" style="font-size:12px;color:#B8963E;font-weight:600;margin-top:1px"></div></div>
+    </div>
+    <button onclick="closeContactPanel()" style="background:none;border:none;cursor:pointer;color:var(--text-secondary);font-size:22px;padding:4px">×</button>
+  </div>
+  <div style="padding:20px">
+
+    <!-- Section Coordonnées -->
+    <div style="font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;padding-bottom:4px;border-bottom:0.5px solid var(--border)">📞 Coordonnées</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px">
+      <div style="background:var(--bg-secondary);border-radius:8px;padding:11px">
+        <div style="font-size:10px;color:var(--text-secondary);margin-bottom:3px;text-transform:uppercase">Mobile</div>
+        <div id="ct-phone" style="font-size:13px;font-weight:500"></div>
+      </div>
+      <div style="background:var(--bg-secondary);border-radius:8px;padding:11px">
+        <div style="font-size:10px;color:var(--text-secondary);margin-bottom:3px;text-transform:uppercase">Tél. pro</div>
+        <div id="ct-phone2" style="font-size:13px;font-weight:500"></div>
+      </div>
+      <div style="background:var(--bg-secondary);border-radius:8px;padding:11px;grid-column:1/-1">
+        <div style="font-size:10px;color:var(--text-secondary);margin-bottom:3px;text-transform:uppercase">✉️ Email professionnel</div>
+        <div id="ct-email" style="font-size:12px;word-break:break-all"></div>
+      </div>
+      <div style="background:var(--bg-secondary);border-radius:8px;padding:11px;grid-column:1/-1" id="ct-email2-block">
+        <div style="font-size:10px;color:var(--text-secondary);margin-bottom:3px;text-transform:uppercase">✉️ Email personnel</div>
+        <div id="ct-email2" style="font-size:12px;word-break:break-all"></div>
+      </div>
+    </div>
+
+    <!-- Section Travail -->
+    <div style="font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;padding-bottom:4px;border-bottom:0.5px solid var(--border)">🏢 Travail</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px">
+      <div style="background:var(--bg-secondary);border-radius:8px;padding:11px;grid-column:1/-1">
+        <div style="font-size:10px;color:var(--text-secondary);margin-bottom:3px;text-transform:uppercase">Entreprise</div>
+        <div id="ct-company" style="font-size:14px;font-weight:600"></div>
+      </div>
+      <div style="background:var(--bg-secondary);border-radius:8px;padding:11px;grid-column:1/-1" id="ct-linkedin-block">
+        <div style="font-size:10px;color:var(--text-secondary);margin-bottom:3px;text-transform:uppercase">🔗 LinkedIn</div>
+        <div id="ct-linkedin" style="font-size:12px"></div>
+      </div>
+    </div>
+
+    <!-- Section Adresse -->
+    <div style="font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;padding-bottom:4px;border-bottom:0.5px solid var(--border)">📍 Adresse</div>
+    <div style="background:var(--bg-secondary);border-radius:8px;padding:11px;margin-bottom:18px">
+      <div id="ct-address" style="font-size:13px"></div>
+      <div id="ct-city-line" style="font-size:12px;color:var(--text-secondary);margin-top:2px"></div>
+      <div id="ct-country" style="font-size:12px;color:var(--text-secondary);margin-top:1px"></div>
+    </div>
+
+    <!-- Commentaires -->
+    <div style="font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;padding-bottom:4px;border-bottom:0.5px solid var(--border)">💬 Notes &amp; Commentaires</div>
+    <div style="margin-bottom:18px">
+      <textarea id="ct-comments" rows="5" placeholder="Notes, contexte de la relation, sujets abordés..."></textarea>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+        <button onclick="saveContactComments()" style="background:#B8963E;color:#1A1A2E;border:none;padding:7px 16px;border-radius:6px;cursor:pointer;font-weight:600;font-size:13px">Enregistrer</button>
+        <span id="ct-save-msg" style="font-size:12px;color:#2d6a10;display:none">✓ Enregistré</span>
+      </div>
+    </div>
+
+    <!-- Historique -->
+    <div style="font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;padding-bottom:4px;border-bottom:0.5px solid var(--border)">🕒 Historique</div>
+    <div id="ct-history" style="font-size:12px;color:var(--text-secondary);margin-bottom:20px"></div>
+
+    <!-- Actions -->
+    <div style="display:flex;gap:8px;padding-top:16px;border-top:0.5px solid var(--border)">
+      <button onclick="editContactFromPanel()" style="flex:1;background:#1A1A2E;color:#B8963E;border:1px solid #B8963E;padding:8px;border-radius:6px;cursor:pointer;font-weight:600;font-size:13px">✏️ Modifier</button>
+      <button onclick="closeContactPanel()" style="flex:1;background:transparent;color:var(--text-secondary);border:0.5px solid var(--border);padding:8px;border-radius:6px;cursor:pointer;font-size:13px">Fermer</button>
+    </div>
+  </div>
+</div>
+<div id="contact-panel-overlay" onclick="closeContactPanel()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:499"></div>
+
 <!-- BACKUP BAR -->
 <div id="backup-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#1A1A2E;border-top:2px solid #B8963E;padding:10px 20px;z-index:998;align-items:center;justify-content:space-between;gap:12px">
   <span style="color:#f0f0f0;font-size:13px">Pensez à sauvegarder vos données !</span>
@@ -477,7 +553,7 @@ function render(sec){
       const role=c.role||c.fonction||c.titre||'';
       const email=c.email||c.mail||'';
       const phone=c.phone||c.telephone||c.tel||'';
-      return'<tr ondblclick="openCandPanel('+c.id+')" style="cursor:pointer"><td><div style="display:flex;align-items:center;gap:8px"><div class="avatar av-'+cur+'">'+initials(name)+'</div>'+name+'</div></td><td>'+company+'</td><td><span class="badge badge-gray">'+role+'</span></td><td style="color:var(--text-secondary);font-size:12px">'+email+'</td><td style="font-size:12px">'+(phone||'\u2014')+'</td><td><button class="btn btn-sm" onclick="editItem(\'contacts\','+c.id+')"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span></button> <button class="btn btn-sm" onclick="deleteItem(\'contacts\','+c.id+')"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></span></button></td></tr>';
+      return'<tr ondblclick="openContactPanel('+c.id+')" style="cursor:pointer" title="Double-clic pour ouvrir la fiche complète"><td><div style="display:flex;align-items:center;gap:8px"><div class="avatar av-'+cur+'">'+initials(name)+'</div>'+name+'</div></td><td>'+company+'</td><td><span class="badge badge-gray">'+role+'</span></td><td style="color:var(--text-secondary);font-size:12px">'+email+'</td><td style="font-size:12px">'+(phone||'\u2014')+'</td><td><button class="btn btn-sm" onclick="openContactPanel('+c.id+')" title="Ouvrir fiche"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></span></button> <button class="btn btn-sm" onclick="editItem(\'contacts\','+c.id+')"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span></button> <button class="btn btn-sm" onclick="deleteItem(\'contacts\','+c.id+')"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></span></button></td></tr>';
     }).join('');
   }
   if(sec==='reporting'){
@@ -503,10 +579,41 @@ const formDefs={
   clients:{fields:[{id:'name',label:'Raison sociale',type:'text'},{id:'contact',label:'Contact principal',type:'text'},{id:'sector',label:'Secteur',type:'text'},{id:'status',label:'Statut',type:'select',opts:['Actif','Inactif']}]},
   candidats:{fields:[{id:'name',label:'Nom complet',type:'text'},{id:'role',label:'Poste vis\u00e9',type:'text'},{id:'exp',label:'Exp\u00e9rience',type:'text'},{id:'status',label:'Statut',type:'select',opts:['\u00c0 contacter','S\u00e9lectionn\u00e9','Short-list','Entretien client','Valid\u00e9','\u00c9cart\u00e9']},{id:'interview_date',label:'Date entretien client',type:'interview_date'},{id:'mission',label:'Mission associ\u00e9e',type:'mission_link'},{id:'email',label:'Email',type:'email'},{id:'phone',label:'T\u00e9l\u00e9phone',type:'text'}]},
   prospects:{fields:[{id:'name',label:'Entreprise',type:'text'},{id:'contact',label:'Contact',type:'text'},{id:'need',label:'Besoin identifi\u00e9',type:'text'},{id:'temp',label:'Temp\u00e9rature',type:'select',opts:['Chaud','Ti\u00e8de','Froid']},{id:'next',label:'Prochaine action',type:'text'}]},
-  contacts:{fields:[{id:'name',label:'Nom complet',type:'text'},{id:'company',label:'Entreprise',type:'text'},{id:'role',label:'R\u00f4le',type:'text'},{id:'email',label:'Email',type:'email'},{id:'phone',label:'T\u00e9l\u00e9phone',type:'text'}]},
+  contacts:{fields:[{id:'firstname',label:'Pr\u00e9nom',type:'text'},{id:'lastname',label:'Nom de famille',type:'text'},{id:'company',label:'Entreprise',type:'text'},{id:'role',label:'Poste / Fonction',type:'text'},{id:'email',label:'Email professionnel',type:'email'},{id:'email2',label:'Email personnel',type:'email'},{id:'phone',label:'T\u00e9l\u00e9phone mobile',type:'text'},{id:'phone2',label:'T\u00e9l\u00e9phone professionnel',type:'text'},{id:'address',label:'Adresse',type:'text'},{id:'city',label:'Ville',type:'text'},{id:'postal',label:'Code postal',type:'text'},{id:'country',label:'Pays',type:'text'},{id:'linkedin',label:'LinkedIn (URL ou profil)',type:'text'},{id:'notes',label:'Notes',type:'textarea'}]},
 };
 
+function buildContactForm(item={}){
+  // Reconstituer name pour compatibilité avec les anciens enregistrements
+  var fn=item.firstname||(item.name?(item.name.split(' ')[0]||''):'');
+  var ln=item.lastname||(item.name?(item.name.split(' ').slice(1).join(' ')||''):'');
+  return `
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+    <div><div style="font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;padding-bottom:4px;border-bottom:1px solid var(--border)">👤 Identité</div>
+    <div class="form-group"><label>Prénom</label><input id="f-firstname" type="text" value="${fn}"></div>
+    <div class="form-group"><label>Nom de famille</label><input id="f-lastname" type="text" value="${ln}"></div>
+    <div class="form-group"><label>Entreprise</label><input id="f-company" type="text" value="${item.company||''}"></div>
+    <div class="form-group"><label>Poste / Fonction</label><input id="f-role" type="text" value="${item.role||''}"></div></div>
+    <div><div style="font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;padding-bottom:4px;border-bottom:1px solid var(--border)">📞 Coordonnées</div>
+    <div class="form-group"><label>Téléphone mobile</label><input id="f-phone" type="text" value="${item.phone||''}"></div>
+    <div class="form-group"><label>Téléphone professionnel</label><input id="f-phone2" type="text" value="${item.phone2||''}"></div>
+    <div class="form-group"><label>Email professionnel</label><input id="f-email" type="email" value="${item.email||''}"></div>
+    <div class="form-group"><label>Email personnel</label><input id="f-email2" type="email" value="${item.email2||''}"></div></div>
+  </div>
+  <div style="font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;padding-bottom:4px;border-bottom:1px solid var(--border)">📍 Adresse professionnelle</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+    <div class="form-group" style="grid-column:1/-1"><label>Rue / Adresse</label><input id="f-address" type="text" value="${item.address||''}"></div>
+    <div class="form-group"><label>Code postal</label><input id="f-postal" type="text" value="${item.postal||''}"></div>
+    <div class="form-group"><label>Ville</label><input id="f-city" type="text" value="${item.city||''}"></div>
+    <div class="form-group" style="grid-column:1/-1"><label>Pays</label><input id="f-country" type="text" value="${item.country||''}"></div>
+  </div>
+  <div style="font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;padding-bottom:4px;border-bottom:1px solid var(--border)">🔗 Autre</div>
+  <div class="form-group"><label>LinkedIn (URL ou nom de profil)</label><input id="f-linkedin" type="text" value="${item.linkedin||''}"></div>
+  <div class="form-group"><label>Notes</label><textarea id="f-notes" rows="4">${item.notes||''}</textarea></div>
+  `;
+}
+
 function buildForm(col,item={}){
+  if(col==='contacts') return buildContactForm(item);
   return formDefs[col].fields.map(f=>{
     var inp='';
     if(f.type==='interview_date'){
@@ -523,6 +630,8 @@ function buildForm(col,item={}){
       var opts='<option value="">-- Aucune --</option>'+missions.map(m=>'<option value="'+m.title+'" '+(item[f.id]===m.title?'selected':'')+'>'+m.title+' ('+m.client+')</option>').join('');
       inp='<select id="f-'+f.id+'">'+opts+'</select>';
       inp+='<input id="f-'+f.id+'-free" type="text" placeholder="Ou saisir manuellement..." value="'+(missions.some(m=>m.title===item[f.id])?'':(item[f.id]||''))+'" style="margin-top:6px">';
+    } else if(f.type==='textarea'){
+      inp='<textarea id="f-'+f.id+'" rows="4">'+(item[f.id]||'')+'</textarea>';
     } else {
       inp='<input id="f-'+f.id+'" type="'+f.type+'" value="'+(item[f.id]||'')+'">';
     }
@@ -530,18 +639,22 @@ function buildForm(col,item={}){
   }).join('');
 }
 
-function handleAdd(){
-  editId=null;editCol=curSec==='dashboard'||curSec==='reporting'||curSec==='import'?'missions':curSec;
-  document.getElementById('modal-title').textContent='Nouveau';
-  document.getElementById('modal-body').innerHTML=buildForm(editCol);
-  document.getElementById('modal-overlay').style.display='flex';
-}
-
 function editItem(col,id){
   editId=id;editCol=col;
   const item=sd()[col].find(x=>x.id===id);
   document.getElementById('modal-title').textContent='Modifier';
   document.getElementById('modal-body').innerHTML=buildForm(col,item);
+  var box=document.querySelector('.modal-box');
+  box.style.width=col==='contacts'?'700px':'480px';
+  document.getElementById('modal-overlay').style.display='flex';
+}
+
+function handleAdd(){
+  editId=null;editCol=curSec==='dashboard'||curSec==='reporting'||curSec==='import'?'missions':curSec;
+  document.getElementById('modal-title').textContent='Nouveau';
+  document.getElementById('modal-body').innerHTML=buildForm(editCol);
+  var box=document.querySelector('.modal-box');
+  box.style.width=editCol==='contacts'?'700px':'480px';
   document.getElementById('modal-overlay').style.display='flex';
 }
 
@@ -555,22 +668,31 @@ function saveModal(){
   if(!editCol)return closeModal();
   const get=id=>{const el=document.getElementById('f-'+id);return el?el.value.trim():'';};
   const data={};
-  formDefs[editCol].fields.forEach(f=>{
-    if(f.type==='mission_link'){
-      var sel=get(f.id);
-      var free=get(f.id+'-free');
-      data[f.id]=sel||free||'';
-    } else if(f.type==='interview_date'){
-      data[f.id]=get(f.id);
-    } else {
-      data[f.id]=get(f.id);
+  if(editCol==='contacts'){
+    // Champs contacts enrichis
+    var fn=get('firstname'); var ln=get('lastname');
+    data.firstname=fn; data.lastname=ln;
+    data.name=((fn+' '+ln).trim())||get('name')||'';
+    ['company','role','phone','phone2','email','email2','address','postal','city','country','linkedin','notes'].forEach(k=>{data[k]=get(k);});
+    // Conserver comments et history existants
+    if(editId){
+      var existing=(sd().contacts||[]).find(x=>x.id===editId);
+      if(existing){ data.comments=existing.comments||''; data.history=existing.history||[]; }
     }
-  });
+  } else {
+    formDefs[editCol].fields.forEach(f=>{
+      if(f.type==='mission_link'){
+        var sel=get(f.id); var free=get(f.id+'-free');
+        data[f.id]=sel||free||'';
+      } else {
+        data[f.id]=get(f.id);
+      }
+    });
+  }
   if(data.rab)data.rab=parseInt(data.rab)||0;
   const arr=sd()[editCol];
   if(editId){const idx=arr.findIndex(x=>x.id===editId);if(idx>=0)arr[idx]={...arr[idx],...data};}
   else{data.id=Date.now();arr.push(data);}
-  // Mettre à jour le compteur de candidats dans les missions liées
   if(editCol==='candidats'){
     (sd().missions||[]).forEach(m=>{
       m.candidats=(sd().candidats||[]).filter(c=>c.mission===m.title).length;
@@ -704,196 +826,44 @@ function editFromPanel(){
   closeCandPanel();
   if(id) setTimeout(function(){ editItem('candidats',id); },150);
 }
-function showMissionFromCand(missionTitle){
-  var mission=(sd().missions||[]).find(m=>m.title===missionTitle);
-  if(mission){
-    show('missions',document.querySelector('.nav-item[onclick*="missions"]'));
-    setTimeout(function(){ editItem('missions',mission.id); },200);
-  }
+var currentContactId = null;
+
+function openContactPanel(id){
+  var c = (sd().contacts||[]).find(function(x){ return x.id===id; });
+  if(!c) return;
+  currentContactId = id;
+  var name = c.name||((c.firstname||'')+' '+(c.lastname||'')).trim()||'';
+  document.getElementById('ct-avatar').textContent = initials(name);
+  document.getElementById('ct-name').textContent = name;
+  document.getElementById('ct-role').textContent = c.role||c.fonction||'';
+  document.getElementById('ct-company-top').textContent = c.company||c.entreprise||'';
+  document.getElementById('ct-company').textContent = (c.company||c.entreprise||'') || '—';
+  document.getElementById('ct-phone').textContent = c.phone||c.telephone||'—';
+  document.getElementById('ct-phone2').textContent = c.phone2||'—';
+  document.getElementById('ct-email').innerHTML = c.email ? '<a href="mailto:'+c.email+'" style="color:#B8963E;text-decoration:none">'+c.email+'</a>' : '—';
+  var e2block = document.getElementById('ct-email2-block');
+  if(c.email2){ document.getElementById('ct-email2').innerHTML='<a href="mailto:'+c.email2+'" style="color:#B8963E;text-decoration:none">'+c.email2+'</a>'; e2block.style.display='block'; }
+  else { e2block.style.display='none'; }
+  // Adresse
+  var addrParts=[c.address,((c.postal||'')+' '+(c.city||'')).trim(),c.country].filter(Boolean);
+  document.getElementById('ct-address').textContent = c.address||'—';
+  document.getElementById('ct-city-line').textContent = ((c.postal||'')+' '+(c.city||'')).trim()||'';
+  document.getElementById('ct-country').textContent = c.country||'';
+  // LinkedIn
+  var li = c.linkedin||'';
+  var liblock = document.getElementById('ct-linkedin-block');
+  if(li){ document.getElementById('ct-linkedin').innerHTML='<a href="'+(li.startsWith('http')?li:'https://'+li)+'" target="_blank" style="color:#B8963E;text-decoration:none">'+li+'</a>'; liblock.style.display='block'; }
+  else { liblock.style.display='none'; }
+  // Commentaires (notes du champ notes OU comments)
+  document.getElementById('ct-comments').value = c.comments||c.notes||'';
+  var hist = c.history||[];
+  document.getElementById('ct-history').innerHTML = hist.length ?
+    hist.map(function(h){ return '<div style="padding:6px 0;border-bottom:0.5px solid var(--border)">'+h+'</div>'; }).join('') :
+    '<div style="color:var(--text-secondary)">Aucun historique</div>';
+  document.getElementById('ct-save-msg').style.display='none';
+  document.getElementById('contact-panel').style.display='block';
+  document.getElementById('contact-panel-overlay').style.display='block';
 }
 
-function backupJSON(){
-  var date=new Date().toISOString().slice(0,10);
-  var struct=cur==='es'?'TL_Executive_Search':'TL_Consulting';
-  var data=JSON.stringify(state,null,2);
-  var a=document.createElement('a');
-  a.href='data:application/json;charset=utf-8,'+encodeURIComponent(data);
-  a.download='Sauvegarde_CRM_'+date+'.json';
-  a.click();
-  hideBackupReminder();
-}
-function backupAllCSV(){
-  var date=new Date().toISOString().slice(0,10);
-  var collections={
-    contacts:['name','company','role','email','phone'],
-    candidats:['name','role','exp','status','interview_date','mission','email','phone'],
-    missions:['title','client','rab','status','candidats','interview_date'],
-    prospects:['name','contact','need','temp','next'],
-    clients:['name','contact','sector','status','missions']
-  };
-  ['es','co'].forEach(function(struct){
-    var label=struct==='es'?'TL_Executive_Search':'TL_Consulting';
-    Object.keys(collections).forEach(function(col){
-      var rows=state[struct][col]||[];
-      if(!rows.length) return;
-      var fields=collections[col];
-      var csv=fields.join(',')+'\n';
-      rows.forEach(function(r){
-        csv+=fields.map(function(f){
-          var v=r[f]||'';
-          return '"'+String(v).replace(/"/g,'""')+'"';
-        }).join(',')+'\n';
-      });
-      var a=document.createElement('a');
-      a.href='data:text/csv;charset=utf-8,﻿'+encodeURIComponent(csv);
-      a.download='Backup_'+label+'_'+col+'_'+date+'.csv';
-      setTimeout(function(){ a.click(); },200*Object.keys(collections).indexOf(col));
-    });
-  });
-  hideBackupReminder();
-}
-function backupAll(){
-  backupJSON();
-  setTimeout(function(){ backupAllCSV(); },500);
-}
-function restoreJSON(event){
-  var file=event.target.files[0];
-  if(!file) return;
-  var reader=new FileReader();
-  reader.onload=function(e){
-    try{
-      var data=JSON.parse(e.target.result);
-      if(data.es&&data.co){
-        state=data;
-        save();
-        render(curSec);
-        document.getElementById('restore-result').innerHTML='<span style="color:#2d6a10;font-weight:600">Restauration r\u00e9ussie !</span>';
-      } else {
-        document.getElementById('restore-result').innerHTML='<span style="color:#e44">Fichier invalide.</span>';
-      }
-    }catch(ex){
-      document.getElementById('restore-result').innerHTML='<span style="color:#e44">Erreur : '+ex.message+'</span>';
-    }
-  };
-  reader.readAsText(file);
-}
-function closeModal(){document.getElementById('modal-overlay').style.display='none';editId=null;editCol=null;}
-
-const csvHeaders={
-  prospects:'name;contact;need;temp;next',
-  missions:'title;client;rab;status;candidats',
-  candidats:'name;role;exp;status;mission;email;phone',
-  clients:'name;contact;sector;status;missions',
-  contacts:'name;company;role;email;phone'
-};
-
-function updateImportHelp(){
-  const t=document.getElementById('import-type').value;
-  document.getElementById('import-help').textContent='Colonnes attendues : '+csvHeaders[t];
-}
-document.addEventListener('DOMContentLoaded',()=>{
-  const sel=document.getElementById('import-type');
-  if(sel)sel.addEventListener('change',updateImportHelp);
-});
-
-function doImport(){
-  var t = document.getElementById('import-type').value;
-  var csv = document.getElementById('import-csv').value.trim();
-  if(!csv){ document.getElementById('import-result').textContent='Aucun contenu a importer.'; return; }
-  csv = csv.replace(/^[\uFEFF\uFFFE]/, '');
-  var firstLine = csv.indexOf('\n') > -1 ? csv.substring(0, csv.indexOf('\n')) : csv;
-
-  var sep = firstLine.indexOf(';') > -1 ? ';' : ',';
-  var allLines = csv.split('\n');
-  var lines = [];
-  for(var x=0; x<allLines.length; x++){ var l=allLines[x].replace(/\r/g,'').trim(); if(l) lines.push(l); }
-  // Parser CSV avec guillemets
-  function parseCSVLine(line, sep) {
-    var result = []; var cur = ''; var inQ = false;
-    for(var i=0; i<line.length; i++) {
-      var c = line[i];
-      if(c === '"') { inQ = !inQ; }
-      else if(c === sep && !inQ) { result.push(cur.trim()); cur = ''; }
-      else { cur += c; }
-    }
-    result.push(cur.trim());
-    return result;
-  }
-  if(lines.length < 2){ document.getElementById('import-result').textContent='Fichier vide.'; return; }
-  var fieldOrder = {
-    prospects: ['name','contact','need','temp','next'],
-    missions:  ['title','client','rab','status','candidats'],
-    candidats: ['name','role','exp','status','mission','email','phone'],
-    clients:   ['name','contact','sector','status','missions'],
-    contacts:  ['name','company','role','email','phone']
-  };
-  var fields = fieldOrder[t] || [];
-  var count = 0;
-  for(var i=1; i<lines.length; i++){
-    var vals = parseCSVLine(lines[i], sep);
-    var obj = { id: Date.now() + i };
-    for(var j=0; j<fields.length; j++){ obj[fields[j]] = vals[j] || ''; }
-    if(t==='missions'){ obj.rab=parseInt(obj.rab)||0; obj.candidats=parseInt(obj.candidats)||0; if(!obj.status) obj.status='Sourcing'; }
-    if(t==='clients'){ obj.missions=parseInt(obj.missions)||0; if(!obj.status) obj.status='Actif'; }
-    if(t==='candidats' && !obj.status) obj.status = '\u00c0 contacter';
-    if(t==='prospects' && !obj.temp) obj.temp = 'Ti\u00e8de';
-    var hasData = false;
-    for(var f=0; f<fields.length; f++){ if(obj[fields[f]] && obj[fields[f]] !== 'undefined' && obj[fields[f]].trim() !== ''){ hasData=true; break; } }
-    if(!hasData) continue;
-    sd()[t].push(obj);
-    count++;
-  }
-  save();
-  document.getElementById('import-result').innerHTML = '<span style="color:#2d6a10;font-weight:600">' + count + ' enregistrement(s) import\u00e9(s).</span>';
-  console.log('Import', t, ':', count, 'items. Current state:', JSON.stringify(sd()[t].slice(0,2)));
-  document.getElementById('import-csv').value = '';
-}
-
-function exportCSV(col){
-  const data=sd()[col];
-  if(!data.length){alert('Aucune donn\u00e9e \u00e0 exporter.');return;}
-  const headers=Object.keys(data[0]).filter(k=>k!=='id');
-  const csv=[headers.join(';'),...data.map(r=>headers.map(h=>r[h]||'').join(';'))].join('\n');
-  const a=document.createElement('a');
-  a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
-  a.download='TL_'+cur.toUpperCase()+'_'+col+'_'+new Date().toISOString().slice(0,10)+'.csv';
-  a.click();
-}
-
-function doSearch(q){
-  if(!q) return render(curSec);
-  const d=sd(); const lq=q.toLowerCase();
-
-  if(curSec==='contacts'){
-    document.getElementById('contacts-tbody').innerHTML=d.contacts.filter(c=>JSON.stringify(c).toLowerCase().includes(lq)).map(c=>{
-      const name=c.name||c.nom||'';const company=c.company||c.entreprise||c.societe||'';const role=c.role||c.fonction||c.titre||'';const email=c.email||c.mail||'';const phone=c.phone||c.telephone||c.tel||'';
-      return'<tr><td><div style="display:flex;align-items:center;gap:8px"><div class="avatar av-'+cur+'">'+initials(name)+'</div>'+name+'</div></td><td>'+company+'</td><td><span class="badge badge-gray">'+role+'</span></td><td style="color:var(--text-secondary);font-size:12px">'+email+'</td><td style="font-size:12px">'+(phone||'\u2014')+'</td><td><button class="btn btn-sm" onclick="editItem(\'contacts\','+c.id+')"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span></button> <button class="btn btn-sm" onclick="deleteItem(\'contacts\','+c.id+')"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></span></button></td></tr>';
-    }).join('');
-  }
-  if(curSec==='candidats'){
-    const list=candFilter?d.candidats.filter(c=>c.status===candFilter):d.candidats;
-    document.getElementById('candidats-tbody').innerHTML=list.filter(c=>JSON.stringify(c).toLowerCase().includes(lq)).map(c=>'<tr ondblclick="openCandPanel('+c.id+')" style="cursor:pointer"><td><div style="display:flex;align-items:center;gap:8px"><div class="avatar av-'+cur+'">'+initials(c.name)+'</div>'+c.name+'</div></td><td>'+(c.role||'')+'</td><td>'+(c.exp||'')+'</td><td>'+sb(c.status)+'</td><td style="color:var(--text-secondary);font-size:12px">'+(c.mission||'\u2014')+'</td><td><button class="btn btn-sm" onclick="editItem(\'candidats\','+c.id+')"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span></button> <button class="btn btn-sm" onclick="deleteItem(\'candidats\','+c.id+')"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></span></button></td></tr>').join('');
-  }
-  if(curSec==='clients'){
-    document.getElementById('clients-tbody').innerHTML=d.clients.filter(c=>JSON.stringify(c).toLowerCase().includes(lq)).map(c=>'<tr><td><div style="display:flex;align-items:center;gap:8px"><div class="avatar av-'+cur+'">'+c.name.slice(0,2).toUpperCase()+'</div>'+c.name+'</div></td><td>'+(c.contact||'')+'</td><td><span class="badge badge-gray">'+(c.sector||'')+'</span></td><td>'+(c.missions||0)+'</td><td>'+sb(c.status)+'</td><td><button class="btn btn-sm" onclick="editItem(\'clients\','+c.id+')"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span></button> <button class="btn btn-sm" onclick="deleteItem(\'clients\','+c.id+')"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></span></button></td></tr>').join('');
-  }
-  if(curSec==='prospects'){
-    document.getElementById('prospects-tbody').innerHTML=d.prospects.filter(p=>JSON.stringify(p).toLowerCase().includes(lq)).map(p=>'<tr><td><strong>'+p.name+'</strong></td><td>'+(p.contact||'')+'</td><td>'+(p.need||'')+'</td><td>'+sb(p.temp)+'</td><td style="font-size:12px;color:var(--text-secondary)">'+(p.next||'')+'</td><td><button class="btn btn-sm" onclick="editItem(\'prospects\','+p.id+')"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span></button> <button class="btn btn-sm" onclick="deleteItem(\'prospects\','+p.id+')"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></span></button></td></tr>').join('');
-  }
-  if(curSec==='missions'){
-    const stages=['Sourcing','Short-list','Entretiens','Proposition','Cl\u00f4tur\u00e9'];
-    const pc={'Sourcing':'#E6F1FB','Short-list':'#EEEDFE','Entretiens':'#FAEEDA','Proposition':'#EAF3DE','Cl\u00f4tur\u00e9':'#F1EFE8'};
-    const ptc={'Sourcing':'#144f8f','Short-list':'#3C3489','Entretiens':'#7a4a08','Proposition':'#2d6a10','Cl\u00f4tur\u00e9':'#555'};
-    const filtered=d.missions.filter(m=>JSON.stringify(m).toLowerCase().includes(lq));
-    document.getElementById('pipeline-board').innerHTML=stages.map(st=>{
-      const cards=filtered.filter(m=>m.status===st);
-      return'<div class="pipe-col"><div class="pipe-header" style="background:'+pc[st]+';color:'+ptc[st]+'">'+st+'<span style="background:rgba(0,0,0,.1);border-radius:20px;padding:1px 8px;font-size:11px">'+cards.length+'</span></div>'+cards.map(m=>'<div class="pipe-card" onclick="editItem(\'missions\','+m.id+')"><div class="pipe-card-title">'+m.title+'</div><div class="pipe-card-sub">'+m.client+'</div><div class="pipe-card-footer"><span style="font-size:11px;color:var(--text-secondary)">'+(m.rab?Number(m.rab).toLocaleString()+'\u20ac':'')+'</span><span style="font-size:11px;color:var(--text-secondary)"><span style="display:inline-flex;align-items:center;vertical-align:middle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> '+(m.candidats||0)+'</span></div></div>').join('')+'</div>';
-    }).join('');
-  }
-}
-
-try { render('dashboard'); } catch(e) { console.error('render error:', e); }
-
-</script>
-</body>
-</html>
+function closeContactPanel(){
+  document.get
