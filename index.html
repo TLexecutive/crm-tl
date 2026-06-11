@@ -777,10 +777,12 @@ function saveComments(){
   var arr=sd().candidats||[];
   var idx=arr.findIndex(function(x){ return x.id===currentCandId; });
   if(idx<0) return;
-  arr[idx].comments=document.getElementById('cp-comments').value;
+  var noteText=document.getElementById('cp-comments').value;
+  arr[idx].comments=noteText;
   var date=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
   if(!arr[idx].history) arr[idx].history=[];
-  arr[idx].history.unshift(date+' \u2014 Note enregistr\u00e9e');
+  var preview=noteText.trim().slice(0,80)+(noteText.trim().length>80?'...':'');
+  arr[idx].history.unshift(date+' — 📝 '+(preview||'Note enregistrée'));
   arr[idx].history=arr[idx].history.slice(0,10);
   save();
   document.getElementById('cp-history').innerHTML=arr[idx].history.map(function(h){
@@ -878,10 +880,12 @@ function saveContactComments(){
   var arr=sd().contacts||[];
   var idx=arr.findIndex(function(x){ return x.id===currentContactId; });
   if(idx<0) return;
-  arr[idx].comments=document.getElementById('ct-comments').value;
+  var noteTextCt=document.getElementById('ct-comments').value;
+  arr[idx].comments=noteTextCt;
   var date=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
   if(!arr[idx].history) arr[idx].history=[];
-  arr[idx].history.unshift(date+' — Note enregistrée');
+  var previewCt=noteTextCt.trim().slice(0,80)+(noteTextCt.trim().length>80?'...':'');
+  arr[idx].history.unshift(date+' — 📝 '+(previewCt||'Note enregistrée'));
   arr[idx].history=arr[idx].history.slice(0,10);
   save();
   document.getElementById('ct-history').innerHTML=arr[idx].history.map(function(h){
@@ -1104,10 +1108,12 @@ function closeProspectPanel(){document.getElementById('prospect-panel').style.di
 function saveProspectComments(){
   if(!currentProspectId)return;
   var arr=sd().prospects; var idx=arr.findIndex(x=>x.id===currentProspectId); if(idx<0)return;
-  arr[idx].comments=document.getElementById('pp-comments').value;
+  var noteTextPp=document.getElementById('pp-comments').value;
+  arr[idx].comments=noteTextPp;
   var date=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
   if(!arr[idx].history)arr[idx].history=[];
-  arr[idx].history.unshift(date+' — Note enregistrée');
+  var previewPp=noteTextPp.trim().slice(0,80)+(noteTextPp.trim().length>80?'...':'');
+  arr[idx].history.unshift(date+' — 📝 '+(previewPp||'Note enregistrée'));
   arr[idx].history=arr[idx].history.slice(0,10);
   save();
   document.getElementById('pp-history').innerHTML=arr[idx].history.map(h=>'<div style="padding:6px 0;border-bottom:0.5px solid var(--border)">'+h+'</div>').join('');
@@ -1138,10 +1144,12 @@ function closeClientPanel(){document.getElementById('client-panel').style.displa
 function saveClientComments(){
   if(!currentClientId)return;
   var arr=sd().clients; var idx=arr.findIndex(x=>x.id===currentClientId); if(idx<0)return;
-  arr[idx].comments=document.getElementById('cl-comments').value;
+  var noteTextCl=document.getElementById('cl-comments').value;
+  arr[idx].comments=noteTextCl;
   var date=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
   if(!arr[idx].history)arr[idx].history=[];
-  arr[idx].history.unshift(date+' — Note enregistrée');
+  var previewCl=noteTextCl.trim().slice(0,80)+(noteTextCl.trim().length>80?'...':'');
+  arr[idx].history.unshift(date+' — 📝 '+(previewCl||'Note enregistrée'));
   arr[idx].history=arr[idx].history.slice(0,10);
   save();
   document.getElementById('cl-history').innerHTML=arr[idx].history.map(h=>'<div style="padding:6px 0;border-bottom:0.5px solid var(--border)">'+h+'</div>').join('');
@@ -1170,10 +1178,12 @@ function closeMissionPanel(){document.getElementById('mission-panel').style.disp
 function saveMissionComments(){
   if(!currentMissionId)return;
   var arr=sd().missions; var idx=arr.findIndex(x=>x.id===currentMissionId); if(idx<0)return;
-  arr[idx].comments=document.getElementById('mp-comments').value;
+  var noteTextMp=document.getElementById('mp-comments').value;
+  arr[idx].comments=noteTextMp;
   var date=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
   if(!arr[idx].history)arr[idx].history=[];
-  arr[idx].history.unshift(date+' — Note enregistrée');
+  var previewMp=noteTextMp.trim().slice(0,80)+(noteTextMp.trim().length>80?'...':'');
+  arr[idx].history.unshift(date+' — 📝 '+(previewMp||'Note enregistrée'));
   arr[idx].history=arr[idx].history.slice(0,10);
   save();
   document.getElementById('mp-history').innerHTML=arr[idx].history.map(h=>'<div style="padding:6px 0;border-bottom:0.5px solid var(--border)">'+h+'</div>').join('');
