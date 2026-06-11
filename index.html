@@ -81,10 +81,15 @@ label{font-size:12px;color:var(--text-secondary);display:block;margin-bottom:4px
 .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
 .modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
 @media(max-width:640px){.sidebar{width:56px;min-width:56px}.nav-item span,.nav-section,.struct-name{display:none}.nav-item{justify-content:center}.two-col{grid-template-columns:1fr}}
+.hist-item{position:relative;padding:7px 0;border-bottom:0.5px solid var(--border);cursor:pointer;font-size:12px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:20px}
+.hist-item:hover{color:var(--text-primary)}
+.hist-item::after{content:'↗';position:absolute;right:4px;top:50%;transform:translateY(-50%);font-size:10px;opacity:.4}
+.hist-tooltip{display:none;position:fixed;background:var(--bg-primary);border:0.5px solid var(--border-hover);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:var(--text-primary);max-width:320px;box-shadow:0 4px 16px rgba(0,0,0,.25);z-index:9999;line-height:1.5;pointer-events:none;word-break:break-word;white-space:normal}
 </style>
 </head>
 <body>
 <div class="crm-wrap">
+<div id="hist-tooltip" class="hist-tooltip"></div>
   <div class="sidebar">
     <div class="logo-area">
       <div class="struct-toggle">
@@ -819,7 +824,7 @@ function openCandPanel(id){
   }
   var hist = c.history||[];
   document.getElementById('cp-history').innerHTML = hist.length ?
-    hist.map(function(h){ return '<div style="padding:6px 0;border-bottom:0.5px solid var(--border)">'+h+'</div>'; }).join('') :
+    hist.map(function(h){ return histLine(h); }).join('') :
     '<div style="color:var(--text-secondary)">Aucun historique</div>';
   document.getElementById('cp-save-msg').style.display='none';
   document.getElementById('cand-panel').style.display='block';
@@ -847,7 +852,7 @@ function saveComments(){
   arr[idx].history=arr[idx].history.slice(0,10);
   save();
   document.getElementById('cp-history').innerHTML=arr[idx].history.map(function(h){
-    return '<div style="padding:6px 0;border-bottom:0.5px solid var(--border)">'+h+'</div>';
+    return histLine(h);
   }).join('');
   var msg=document.getElementById('cp-save-msg');
   msg.style.display='inline'; setTimeout(function(){ msg.style.display='none'; },2000);
@@ -872,7 +877,7 @@ function loadCV(event){
     document.getElementById('cp-cv-loaded').style.display='flex';
     document.getElementById('cp-cv-empty').style.display='none';
     document.getElementById('cp-history').innerHTML=arr[idx].history.map(function(h){
-      return '<div style="padding:6px 0;border-bottom:0.5px solid var(--border)">'+h+'</div>';
+      return histLine(h);
     }).join('');
   };
   reader.readAsDataURL(file);
@@ -923,7 +928,7 @@ function openContactPanel(id){
   document.getElementById('ct-comments').value = c.comments||c.notes||'';
   var hist = c.history||[];
   document.getElementById('ct-history').innerHTML = hist.length ?
-    hist.map(function(h){ return '<div style="padding:6px 0;border-bottom:0.5px solid var(--border)">'+h+'</div>'; }).join('') :
+    hist.map(function(h){ return histLine(h); }).join('') :
     '<div style="color:var(--text-secondary)">Aucun historique</div>';
   document.getElementById('ct-save-msg').style.display='none';
   document.getElementById('contact-panel').style.display='block';
@@ -951,7 +956,7 @@ function saveContactComments(){
   arr[idx].history=arr[idx].history.slice(0,10);
   save();
   document.getElementById('ct-history').innerHTML=arr[idx].history.map(function(h){
-    return '<div style="padding:6px 0;border-bottom:0.5px solid var(--border)">'+h+'</div>';
+    return histLine(h);
   }).join('');
   var msg=document.getElementById('ct-save-msg');
   msg.style.display='inline'; setTimeout(function(){ msg.style.display='none'; },2000);
@@ -1148,6 +1153,26 @@ function doSearch(q){
   }
 }
 
+// ===== TOOLTIP HISTORIQUE =====
+function histLine(h){
+  var escaped=h.replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  return'<div class="hist-item" onmouseenter="showHistTooltip(event,\''+escaped+'\')" onmouseleave="hideHistTooltip()">'+h+'</div>';
+}
+function showHistTooltip(e,text){
+  var t=document.getElementById('hist-tooltip');
+  t.textContent=text.replace(/&quot;/g,'"').replace(/&#39;/g,"'");
+  t.style.display='block';
+  var x=e.clientX+12; var y=e.clientY-10;
+  // Éviter de sortir à droite
+  if(x+340>window.innerWidth) x=e.clientX-340;
+  // Éviter de sortir en haut
+  if(y<8) y=8;
+  t.style.left=x+'px'; t.style.top=y+'px';
+}
+function hideHistTooltip(){
+  document.getElementById('hist-tooltip').style.display='none';
+}
+
 // ===== RECHERCHE CONTACT OPÉRATIONNEL (formulaire mission Consulting) =====
 function searchOpContact(q){
   var box=document.getElementById('op-search-results'); if(!box)return;
@@ -1216,7 +1241,7 @@ function openProspectPanel(id){
   document.getElementById('pp-next').textContent=p.next||'—';
   document.getElementById('pp-comments').value=p.comments||'';
   var hist=p.history||[];
-  document.getElementById('pp-history').innerHTML=hist.length?hist.map(h=>'<div style="padding:6px 0;border-bottom:0.5px solid var(--border)">'+h+'</div>').join(''):'<div style="color:var(--text-secondary)">Aucun historique</div>';
+  document.getElementById('pp-history').innerHTML=hist.length?hist.map(h=>histLine(h)).join(''):'<div style="color:var(--text-secondary)">Aucun historique</div>';
   document.getElementById('pp-save-msg').style.display='none';
   document.getElementById('prospect-panel').style.display='block';
   document.getElementById('prospect-panel-overlay').style.display='block';
@@ -1234,7 +1259,7 @@ function saveProspectComments(){
   arr[idx].history.unshift(date+' — 📝 '+(previewPp||'Note enregistrée'));
   arr[idx].history=arr[idx].history.slice(0,10);
   save();
-  document.getElementById('pp-history').innerHTML=arr[idx].history.map(h=>'<div style="padding:6px 0;border-bottom:0.5px solid var(--border)">'+h+'</div>').join('');
+  document.getElementById('pp-history').innerHTML=arr[idx].history.map(h=>histLine(h)).join('');
   var msg=document.getElementById('pp-save-msg'); msg.style.display='inline'; setTimeout(()=>{msg.style.display='none';},2000);
 }
 function editProspectFromPanel(){var id=currentProspectId;closeProspectPanel();if(id)setTimeout(()=>{editItem('prospects',id);},150);}
@@ -1253,7 +1278,7 @@ function openClientPanel(id){
   document.getElementById('cl-sector-val').textContent=c.sector||'—';
   document.getElementById('cl-comments').value=c.comments||'';
   var hist=c.history||[];
-  document.getElementById('cl-history').innerHTML=hist.length?hist.map(h=>'<div style="padding:6px 0;border-bottom:0.5px solid var(--border)">'+h+'</div>').join(''):'<div style="color:var(--text-secondary)">Aucun historique</div>';
+  document.getElementById('cl-history').innerHTML=hist.length?hist.map(h=>histLine(h)).join(''):'<div style="color:var(--text-secondary)">Aucun historique</div>';
   document.getElementById('cl-save-msg').style.display='none';
   document.getElementById('client-panel').style.display='block';
   document.getElementById('client-panel-overlay').style.display='block';
@@ -1271,7 +1296,7 @@ function saveClientComments(){
   arr[idx].history.unshift(date+' — 📝 '+(previewCl||'Note enregistrée'));
   arr[idx].history=arr[idx].history.slice(0,10);
   save();
-  document.getElementById('cl-history').innerHTML=arr[idx].history.map(h=>'<div style="padding:6px 0;border-bottom:0.5px solid var(--border)">'+h+'</div>').join('');
+  document.getElementById('cl-history').innerHTML=arr[idx].history.map(h=>histLine(h)).join('');
   var msg=document.getElementById('cl-save-msg'); msg.style.display='inline'; setTimeout(()=>{msg.style.display='none';},2000);
 }
 function editClientFromPanel(){var id=currentClientId;closeClientPanel();if(id)setTimeout(()=>{editItem('clients',id);},150);}
@@ -1303,7 +1328,7 @@ function openMissionPanel(id){
   } else if(coBlock){ coBlock.style.display='none'; }
   document.getElementById('mp-comments').value=m.comments||'';
   var hist=m.history||[];
-  document.getElementById('mp-history').innerHTML=hist.length?hist.map(h=>'<div style="padding:6px 0;border-bottom:0.5px solid var(--border)">'+h+'</div>').join(''):'<div style="color:var(--text-secondary)">Aucun historique</div>';
+  document.getElementById('mp-history').innerHTML=hist.length?hist.map(h=>histLine(h)).join(''):'<div style="color:var(--text-secondary)">Aucun historique</div>';
   document.getElementById('mp-save-msg').style.display='none';
   document.getElementById('mission-panel').style.display='block';
   document.getElementById('mission-panel-overlay').style.display='block';
@@ -1321,7 +1346,7 @@ function saveMissionComments(){
   arr[idx].history.unshift(date+' — 📝 '+(previewMp||'Note enregistrée'));
   arr[idx].history=arr[idx].history.slice(0,10);
   save();
-  document.getElementById('mp-history').innerHTML=arr[idx].history.map(h=>'<div style="padding:6px 0;border-bottom:0.5px solid var(--border)">'+h+'</div>').join('');
+  document.getElementById('mp-history').innerHTML=arr[idx].history.map(h=>histLine(h)).join('');
   var msg=document.getElementById('mp-save-msg'); msg.style.display='inline'; setTimeout(()=>{msg.style.display='none';},2000);
 }
 function editMissionFromPanel(){var id=currentMissionId;closeMissionPanel();if(id)setTimeout(()=>{editItem('missions',id);},150);}
