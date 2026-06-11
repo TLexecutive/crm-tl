@@ -1541,4 +1541,12 @@ try { render('dashboard'); } catch(e) { console.error('render error:', e); }
     <div id="mp-history" style="font-size:12px;color:var(--text-secondary);margin-bottom:20px"></div>
     <div style="display:flex;gap:8px;padding-top:16px;border-top:0.5px solid var(--border)">
       <button onclick="editMissionFromPanel()" style="flex:1;background:#1A1A2E;color:#B8963E;border:1px solid #B8963E;padding:8px;border-radius:6px;cursor:pointer;font-weight:600;font-size:13px">✏️ Modifier</button>
-      <button onclick="c
+      <button onclick="closeMissionPanel()" style="flex:1;background:transparent;color:var(--text-secondary);border:0.5px solid var(--border);padding:8px;border-radius:6px;cursor:pointer;font-size:13px">Fermer</button>
+    </div>
+  </div>
+</div>
+<div id="mission-panel-overlay" onclick="closeMissionPanel()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:499"></div>
+<div id="hist-tooltip" class="hist-tooltip"></div>
+
+</body>
+</html>
