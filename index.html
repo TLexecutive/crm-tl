@@ -94,6 +94,7 @@ body{font-family:'Inter',sans-serif;background:var(--dark2);color:var(--text);mi
   <div class="result-item"><div class="r-label">Total Factures HT</div><div class="r-value" style="color:var(--blue)" id="b-factures">—</div></div>
   <div class="result-item"><div class="r-label">Total Charges</div><div class="r-value" style="color:var(--red)" id="b-charges">—</div></div>
   <div class="result-item"><div class="r-label">IS Provisionnel</div><div class="r-value" style="color:var(--red)" id="b-is">—</div></div>
+  <div class="result-item"><div class="r-label">Résultat Net après IS</div><div class="r-value" style="color:var(--green)" id="b-resnet">—</div></div>
   <div class="result-item"><div class="r-label">Dividendes Nets</div><div class="r-value" style="color:var(--green)" id="b-divnet">—</div></div>
   <div class="result-item"><div class="r-label">Prévisionnel Total</div><div class="r-value" style="color:var(--blue)" id="b-prev">—</div></div>
 </div>
@@ -521,12 +522,4 @@ function calcAll(){
   setEl('b-cm',       totalCM);
   setEl('b-factures', totalFactures);
   setEl('b-charges',  totalCharges);
-  setEl('b-is',       isEstime);
-  setEl('b-divnet',   divNet);
-  setEl('b-prev',     totalPrev);
-}
-
-loadState();buildAll();calcAll();
-</script>
-</body>
-</html>
+  setEl('b
